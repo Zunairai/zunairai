@@ -1,12 +1,13 @@
 // @ts-ignore
 import nodemailer from "nodemailer";
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
 
     const { email, score, result, recommendations } = body;
 
-    // Validate input
+    // ===== VALIDATION =====
     if (!email) {
       return Response.json(
         { success: false, message: "Email is required" },
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // Create transporter
+    // ===== CREATE TRANSPORTER =====
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
@@ -23,27 +24,38 @@ export async function POST(req: Request) {
       },
     });
 
-    // Email content
+    // ===== EMAIL TEMPLATE =====
     const mailOptions = {
-      from: process.env.EMAIL_USER,
+      from: `"ZunairAI Security" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your Digital Peace Assessment Report",
+
       html: `
-        <h2>Digital Peace Report</h2>
-        <p><strong>Score:</strong> ${score}%</p>
-        <p><strong>Status:</strong> ${result}</p>
+        <div style="font-family: Arial, sans-serif; padding:20px; background:#0f172a; color:#e2e8f0;">
+          
+          <h2 style="color:#3b82f6;">Digital Peace Report</h2>
 
-        <h3>Recommended Actions:</h3>
-        <ul>
-          ${recommendations.map((rec: string) => `<li>${rec}</li>`).join("")}
-        </ul>
+          <p><strong>Score:</strong> ${score}%</p>
+          <p><strong>Status:</strong> ${result}</p>
 
-        <br/>
-        <p>Thank you for using ZunairAI 🚀</p>
+          <h3 style="margin-top:20px;">Recommended Actions:</h3>
+          <ul>
+            ${
+              recommendations?.map((rec: string) => `<li>${rec}</li>`).join("") || ""
+            }
+          </ul>
+
+          <br/>
+
+          <p style="margin-top:20px;">
+            Thank you for using <strong>ZunairAI</strong> 🚀
+          </p>
+
+        </div>
       `,
     };
 
-    // Send email
+    // ===== SEND EMAIL =====
     await transporter.sendMail(mailOptions);
 
     return Response.json({ success: true });

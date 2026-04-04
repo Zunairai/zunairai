@@ -1,27 +1,32 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import Navbar from "../../components/Navbar";
 
 export default function Dashboard() {
-  const router = useRouter();
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    const isAuth = localStorage.getItem("auth");
-    if (!isAuth) router.push("/login");
+    const stored = localStorage.getItem("assessment");
+    if (stored) setData(JSON.parse(stored));
   }, []);
 
   return (
-    <div style={{ padding: "40px" }}>
-      <h1>Dashboard</h1>
-      <p>Welcome to ZunairAI Admin Panel 🚀</p>
+    <>
+      <Navbar />
 
-      <button onClick={() => {
-        localStorage.removeItem("auth");
-        router.push("/login");
-      }}>
-        Logout
-      </button>
-    </div>
+      <div className="center">
+        <h1>Your Assessment Dashboard</h1>
+
+        {data ? (
+          <div className="card">
+            <h2>Score: {data.score}%</h2>
+            <p>Date: {data.date}</p>
+          </div>
+        ) : (
+          <p>No data found</p>
+        )}
+      </div>
+    </>
   );
 }

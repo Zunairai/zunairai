@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import ThemeToggle from "./ThemeToggle";
 
-export default function Navbar(): JSX.Element {
+export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
 
@@ -19,7 +19,6 @@ export default function Navbar(): JSX.Element {
       {/* CENTER LINKS */}
       <div className="nav-links">
 
-        {/* ✅ MAIN BRAND PAGE */}
         <Link
           href="/digital-peace"
           className={pathname === "/digital-peace" ? "active" : ""}
@@ -27,7 +26,6 @@ export default function Navbar(): JSX.Element {
           Digital Peace
         </Link>
 
-        {/* ✅ CONTENT */}
         <Link
           href="/blog"
           className={pathname === "/blog" ? "active" : ""}

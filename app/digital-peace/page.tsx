@@ -7,7 +7,7 @@ import CursorGlow from "../../components/CursorGlow";
 import Footer from "../../components/Footer";
 import Contact from "../../components/Contact";
 
-export default function DigitalPeace(): (no return type) {
+export default function DigitalPeace() {
   return (
     <>
       <Background />

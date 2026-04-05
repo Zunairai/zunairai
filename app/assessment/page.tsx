@@ -27,7 +27,7 @@ export default function Assessment() {
   ];
 
   const handleAnswer = (id: string, value: number) => {
-    setAnswers({ ...answers, [id]: value });
+    setAnswers((prev) => ({ ...prev, [id]: value }));
   };
 
   const calculateScore = () => {
@@ -37,14 +37,16 @@ export default function Assessment() {
 
     setScore(result);
 
-    // Save to dashboard
-    localStorage.setItem(
-      "assessment",
-      JSON.stringify({
-        score: result,
-        date: new Date().toLocaleString(),
-      })
-    );
+    // Save to dashboard (safe for client only)
+    if (typeof window !== "undefined") {
+      localStorage.setItem(
+        "assessment",
+        JSON.stringify({
+          score: result,
+          date: new Date().toLocaleString(),
+        })
+      );
+    }
   };
 
   const getResultText = () => {
@@ -59,9 +61,9 @@ export default function Assessment() {
     const recs: string[] = [];
 
     if (answers.mfa !== 2) recs.push("Enable Multi-Factor Authentication (MFA)");
-    if (answers.endpoint !== 2) recs.push("Implement endpoint protection (Intune/Defender)");
-    if (answers.backup !== 2) recs.push("Set up a secure backup strategy");
-    if (answers.updates !== 2) recs.push("Ensure regular patching and updates");
+    if (answers.endpoint !== 2) recs.push("Implement endpoint protection");
+    if (answers.backup !== 2) recs.push("Set up secure backup strategy");
+    if (answers.updates !== 2) recs.push("Ensure regular patching");
     if (answers.monitoring !== 2) recs.push("Implement real-time monitoring");
 
     return recs;
@@ -80,17 +82,36 @@ export default function Assessment() {
   };
 
   const sendEmail = async () => {
-    await fetch("/api/send-report", {
-      method: "POST",
-      body: JSON.stringify({
-        email,
-        score,
-        result: getResultText(),
-        recommendations: getRecommendations(),
-      }),
-    });
+    if (!email) {
+      alert("Please enter email");
+      return;
+    }
 
-    alert("Report sent to your email!");
+    try {
+      const res = await fetch("/api/send-report", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json", // ✅ IMPORTANT FIX
+        },
+        body: JSON.stringify({
+          email,
+          score,
+          result: getResultText(),
+          recommendations: getRecommendations(),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert("Report sent successfully!");
+      } else {
+        alert("Failed to send email");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error sending email");
+    }
   };
 
   return (
@@ -100,8 +121,8 @@ export default function Assessment() {
       <Navbar />
 
       <main className="center">
-
         <h1>Digital Peace Score</h1>
+
         <p className="hero-sub">
           Assess your security posture in 60 seconds.
         </p>
@@ -112,43 +133,23 @@ export default function Assessment() {
               <p>{q.text}</p>
 
               <div style={{ marginTop: "10px" }}>
-                {/* YES */}
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleAnswer(q.id, 2)}
-                  style={{
-                    background: answers[q.id] === 2 ? "#3b82f6" : "",
-                    color: answers[q.id] === 2 ? "white" : ""
-                  }}
-                >
-                  Yes
-                </button>
-
-                {/* PARTIAL */}
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleAnswer(q.id, 1)}
-                  style={{
-                    marginLeft: "10px",
-                    background: answers[q.id] === 1 ? "#3b82f6" : "",
-                    color: answers[q.id] === 1 ? "white" : ""
-                  }}
-                >
-                  Partially
-                </button>
-
-                {/* NO */}
-                <button
-                  className="btn-secondary"
-                  onClick={() => handleAnswer(q.id, 0)}
-                  style={{
-                    marginLeft: "10px",
-                    background: answers[q.id] === 0 ? "#3b82f6" : "",
-                    color: answers[q.id] === 0 ? "white" : ""
-                  }}
-                >
-                  No
-                </button>
+                {[2, 1, 0].map((val, i) => {
+                  const labels = ["Yes", "Partially", "No"];
+                  return (
+                    <button
+                      key={val}
+                      className="btn-secondary"
+                      onClick={() => handleAnswer(q.id, val)}
+                      style={{
+                        marginLeft: i !== 0 ? "10px" : "0",
+                        background: answers[q.id] === val ? "#3b82f6" : "",
+                        color: answers[q.id] === val ? "white" : "",
+                      }}
+                    >
+                      {labels[i]}
+                    </button>
+                  );
+                })}
               </div>
             </div>
           ))}
@@ -175,7 +176,7 @@ export default function Assessment() {
 
             <ul style={{ textAlign: "left", marginTop: "10px" }}>
               {getRecommendations().length === 0 ? (
-                <li>✔ No major issues found. Your setup looks strong.</li>
+                <li>✔ No major issues found</li>
               ) : (
                 getRecommendations().map((rec, i) => (
                   <li key={i}>✔ {rec}</li>
@@ -183,7 +184,6 @@ export default function Assessment() {
               )}
             </ul>
 
-            {/* EMAIL INPUT */}
             <input
               type="email"
               placeholder="Enter your email"
@@ -208,7 +208,6 @@ export default function Assessment() {
             </div>
           </div>
         )}
-
       </main>
 
       <Footer />

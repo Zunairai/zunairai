@@ -17,8 +17,6 @@ export default function Login() {
       redirect: false,
     });
 
-    console.log("LOGIN RESPONSE:", res);
-
     if (res?.ok) {
       router.push("/dashboard");
     } else {

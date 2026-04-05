@@ -13,7 +13,7 @@ type Answer = {
   [key: string]: number;
 };
 
-export default function Assessment(): JSX.Element {
+export default function Assessment() {
   const [answers, setAnswers] = useState<Answer>({});
   const [score, setScore] = useState<number | null>(null);
   const [email, setEmail] = useState("");

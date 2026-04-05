@@ -1,32 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Navbar from "../../components/Navbar";
+import { useSession } from "next-auth/react";
 
 export default function Dashboard() {
-  const [data, setData] = useState<any>(null);
+  const { data: session } = useSession();
 
-  useEffect(() => {
-    const stored = localStorage.getItem("assessment");
-    if (stored) setData(JSON.parse(stored));
-  }, []);
+  if (!session) {
+    return <p>Loading or not logged in...</p>;
+  }
 
   return (
-    <>
-      <Navbar />
-
-      <div className="center">
-        <h1>Your Assessment Dashboard</h1>
-
-        {data ? (
-          <div className="card">
-            <h2>Score: {data.score}%</h2>
-            <p>Date: {data.date}</p>
-          </div>
-        ) : (
-          <p>No data found</p>
-        )}
-      </div>
-    </>
+    <div className="center">
+      <h1>Welcome {session.user?.email}</h1>
+    </div>
   );
 }

@@ -1,12 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
-
-// ✅ IMPORT SAME UI COMPONENTS
-import Navbar from "../../components/Navbar";
-import Background from "../../components/Background";
-import CursorGlow from "../../components/CursorGlow";
 
 export default function Login() {
   const router = useRouter();
@@ -14,14 +10,16 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  useEffect(() => {
-    const isAuth = localStorage.getItem("auth");
-    if (isAuth) router.push("/dashboard");
-  }, []);
+  const handleLogin = async () => {
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
 
-  const handleLogin = () => {
-    if (email === "admin@zunairai.com" && password === "123456") {
-      localStorage.setItem("auth", "true");
+    console.log("LOGIN RESPONSE:", res);
+
+    if (res?.ok) {
       router.push("/dashboard");
     } else {
       alert("Invalid credentials");
@@ -29,40 +27,25 @@ export default function Login() {
   };
 
   return (
-    <>
-      {/* SAME UI AS HOME */}
-      <Background />
-      <CursorGlow />
-      <Navbar />
+    <div className="center">
+      <h1>Login</h1>
 
-      <div className="section" style={{ textAlign: "center" }}>
-        <h1>Login</h1>
+      <input
+        className="login-input"
+        placeholder="Email"
+        onChange={(e) => setEmail(e.target.value)}
+      />
 
-        <input
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+      <input
+        className="login-input"
+        type="password"
+        placeholder="Password"
+        onChange={(e) => setPassword(e.target.value)}
+      />
 
-        <input
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <br />
-
-        <button onClick={handleLogin}>Login</button>
-
-        <p style={{ marginTop: "20px" }}>
-          Not registered?{" "}
-          <span
-            onClick={() => router.push("/register")}
-            style={{ color: "#3b82f6", cursor: "pointer" }}
-          >
-            Create account
-          </span>
-        </p>
-      </div>
-    </>
+      <button className="btn-primary" onClick={handleLogin}>
+        Login
+      </button>
+    </div>
   );
 }

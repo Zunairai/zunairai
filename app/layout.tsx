@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Providers from "../components/Providers"; // ✅ ADD THIS
 
 // ================= FONTS =================
 const geistSans = Geist({
@@ -22,7 +23,6 @@ export const metadata: Metadata = {
   description:
     "ZunairAI is a cybersecurity and AI platform focused on endpoint security, infrastructure protection, and digital peace.",
 
-  // SEO Keywords
   keywords: [
     "Cybersecurity",
     "Endpoint Security",
@@ -32,11 +32,9 @@ export const metadata: Metadata = {
     "ZunairAI",
   ],
 
-  // Author / Brand
   authors: [{ name: "ZunairAI" }],
   creator: "ZunairAI",
 
-  // Open Graph (for LinkedIn / WhatsApp / Facebook preview)
   openGraph: {
     title: "ZunairAI",
     description:
@@ -46,7 +44,6 @@ export const metadata: Metadata = {
     type: "website",
   },
 
-  // Twitter Preview
   twitter: {
     card: "summary_large_image",
     title: "ZunairAI",
@@ -54,7 +51,6 @@ export const metadata: Metadata = {
       "Cybersecurity, AI & Digital Peace Platform for modern enterprises.",
   },
 
-  // Favicon
   icons: {
     icon: "/favicon.ico",
   },
@@ -63,16 +59,21 @@ export const metadata: Metadata = {
 // ================= LAYOUT =================
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#020617] text-white">
-        {children}
+
+        {/* ✅ WRAP WITH PROVIDER */}
+        <Providers>
+          {children}
+        </Providers>
+
       </body>
     </html>
   );

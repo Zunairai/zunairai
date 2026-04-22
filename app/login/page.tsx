@@ -18,7 +18,7 @@ export default function Login() {
     });
 
     if (res?.ok) {
-      router.push("/dashboard");
+      router.push("/assessment");
     } else {
       alert("Invalid credentials");
     }
@@ -44,6 +44,15 @@ export default function Login() {
       <button className="btn-primary" onClick={handleLogin}>
         Login
       </button>
+      <p style={{ marginTop: "10px" }}>
+  Don't have an account?{" "}
+  <span
+    style={{ color: "#3b82f6", cursor: "pointer" }}
+    onClick={() => router.push("/signup")}
+  >
+    Sign up
+  </span>
+</p>
     </div>
   );
 }

@@ -19,21 +19,14 @@ export default function Navbar() {
       {/* CENTER LINKS */}
       <div className="nav-links">
 
-        <Link
-          href="/digital-peace"
-          className={pathname === "/digital-peace" ? "active" : ""}
-        >
-          Digital Peace
-        </Link>
+  <Link href="/digital-peace">Digital Peace</Link>
+  <Link href="/assessment">Assessment</Link>
+  <Link href="/enterprise-security">Enterprise</Link>
+  <Link href="/vulnerability-management">Vulnerability</Link>
+  <Link href="/about">About</Link>
+  <Link href="/blog">Blog</Link>
 
-        <Link
-          href="/blog"
-          className={pathname === "/blog" ? "active" : ""}
-        >
-          Blog
-        </Link>
-
-      </div>
+</div>
 
       {/* RIGHT SIDE */}
       <div className="nav-right">
